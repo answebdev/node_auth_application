@@ -1,5 +1,6 @@
 // Mongoose helps us create schemas, validate schemas, etc.
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 // USER SCHEMA - this is going to be used in the 'controller', i.e., 'controllers/auth.js'
 // 'match' property below means to match the email to a regular expression.
@@ -29,6 +30,28 @@ const UserSchema = new mongoose.Schema({
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
+});
+
+// Run a few pieces of middleware (thanks to Mongoose) for pre-saving or post-saving.
+// This 'pre' will run pre some function; in this case, we want to run this BEFORE it gets saved ('save');
+// important: use the 'function' declaration here and NOT an arrow function.
+// First, we want to check if the password being passed in is modified ('isModified').
+// If the password is NOT modified, it will not rehash - it will just save the current password.
+UserSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    next();
+  }
+
+  // HASH THE PASSWORD (using 'bcryptjs').
+  // The higher the number, the more secure; but '10' should be fine -
+  // 10 is the number of digits the hashed password will have.
+  const salt = await bcrypt.genSalt(10);
+
+  // Change the password sent - this will sabe the new password in the 'password' field that was passed in,
+  // and then it would save the document.
+  // This is the password that will be used in the controller ('auth.js') - see 'const user = await User.create'.
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
 });
 
 const User = mongoose.model('User', UserSchema);

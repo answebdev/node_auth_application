@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/answebdev/node_auth_application#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "mongoose": "^6.5.1"
