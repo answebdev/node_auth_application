@@ -18,9 +18,4 @@ const connectDB = async () => {
 
 module.exports = connectDB;
 
-// Need to create a MongoDB project, cluster, etc.
-// and use the connection string in 'config.env' instead of the current 'localhost' string.
-
-// See around 36:50
-
 // STOPPED at 39:40 - next: Test on Postman
