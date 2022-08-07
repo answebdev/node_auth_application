@@ -9,6 +9,8 @@ const connectDB = async () => {
     // The following are no longer supported:
     // useCreateIndex: true,
     // useFindAndModify: true,
+
+    // See: https://www.mongodb.com/community/forums/t/option-usecreateindex-is-not-supported/123048/3
   });
 
   console.log('MongoDB Connected');
@@ -21,4 +23,4 @@ module.exports = connectDB;
 
 // See around 36:50
 
-// STOPPED at 39:40
+// STOPPED at 39:40 - next: Test on Postman
