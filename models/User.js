@@ -32,6 +32,7 @@ const UserSchema = new mongoose.Schema({
   resetPasswordExpire: Date,
 });
 
+// MIDDLEWARE
 // Run a few pieces of middleware (thanks to Mongoose) for pre-saving or post-saving.
 // This 'pre' will run pre some function; in this case, we want to run this BEFORE it gets saved ('save');
 // important: use the 'function' declaration here and NOT an arrow function.
@@ -53,6 +54,13 @@ UserSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
+
+// Method that checks to see if password entered with email when logging in is the same as the user password in the database.
+// This function receives a 'password' from the user.
+// This 'matchPassword' method will be run on the user in the try/catch (in the Login User section) in 'controllers/auth.js'.
+UserSchema.methods.matchPasswords = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
 
 const User = mongoose.model('User', UserSchema);
 
