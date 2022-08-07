@@ -17,5 +17,3 @@ const connectDB = async () => {
 };
 
 module.exports = connectDB;
-
-// STOPPED at 39:40 - next: Test on Postman
