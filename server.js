@@ -7,6 +7,7 @@
 require('dotenv').config({ path: './config.env' });
 const express = require('express');
 const connectDB = require('./config/db');
+const errorHandler = require('./middleware/error');
 
 // Connect DB
 connectDB();
@@ -21,6 +22,11 @@ app.use(express.json());
 // whenever a request comes in, this piece of middleware catches it
 // and checks if it's to '/api/auth', or something, then it will be redirected to the 'auth' router:
 app.use('/api/auth', require('./routes/auth'));
+
+// Error Handler Middleware
+// Important: This error handler must be the LAST piece of middleware in this server file (i.e, if there are other middlewares in this file,
+// as we do - see above - then this one should be the last one).
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
