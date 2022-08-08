@@ -17,3 +17,5 @@ const connectDB = async () => {
 };
 
 module.exports = connectDB;
+
+// STOPPED at 49:49

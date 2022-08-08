@@ -57,7 +57,7 @@ exports.login = async (req, res, next) => {
     // Find user in database by email address, since email should be unique,
     // then 'select' the password - this will return a user with email, id, and password,
     // because we want to compare the password now.
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email }).select('password');
 
     // If we do not get a user back, we want a status 404 ('user not found)
     if (!user) {
