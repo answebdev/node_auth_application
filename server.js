@@ -22,6 +22,7 @@ app.use(express.json());
 // whenever a request comes in, this piece of middleware catches it
 // and checks if it's to '/api/auth', or something, then it will be redirected to the 'auth' router:
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/private', require('./routes/private'));
 
 // Error Handler Middleware
 // Important: This error handler must be the LAST piece of middleware in this server file (i.e, if there are other middlewares in this file,

@@ -1,5 +1,5 @@
 // Middleware that checks for a JSON Web Token in the headers
-const jwt = require('jwt');
+const jwt = require('jsonwebtoken');
 const ErrorResponse = require('../utils/errorResponse');
 const User = require('../models/User');
 
