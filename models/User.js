@@ -1,6 +1,7 @@
 // Mongoose helps us create schemas, validate schemas, etc.
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 // USER SCHEMA - this is going to be used in the 'controller', i.e., 'controllers/auth.js'
 // 'match' property below means to match the email to a regular expression.
@@ -60,6 +61,14 @@ UserSchema.pre('save', async function (next) {
 // This 'matchPassword' method will be run on the user in the try/catch (in the Login User section) in 'controllers/auth.js'.
 UserSchema.methods.matchPasswords = async function (password) {
   return await bcrypt.compare(password, this.password);
+};
+
+// Method that generates a token for us - use in 'controllers/auth.js' down below in the 'sendToken' function.
+// Put 'JWT_SECRET' in the 'config.env' file.
+UserSchema.methods.getSignedJwtToken = function () {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE,
+  });
 };
 
 const User = mongoose.model('User', UserSchema);

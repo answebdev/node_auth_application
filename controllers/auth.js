@@ -27,10 +27,13 @@ exports.register = async (req, res, next) => {
       password,
     });
 
-    res.status(201).json({
-      success: true,
-      user: user,
-    });
+    // res.status(201).json({
+    //   success: true,
+    //   token: 'h34kh34',
+    // });
+
+    // See down below to see 'sendToken' function
+    sendToken(user, 201, res);
   } catch (error) {
     // res.status(500).json({
     //   success: false,
@@ -89,10 +92,11 @@ exports.login = async (req, res, next) => {
     }
 
     // Provide token for user to log in
-    res.status(200).json({
-      success: true,
-      token: '4391y4kh23',
-    });
+    // res.status(200).json({
+    //   success: true,
+    //   token: '4391y4kh23',
+    // });
+    sendToken(user, 200, res);
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -104,4 +108,9 @@ exports.forgotpassword = (req, res, next) => {
 
 exports.resetpassword = (req, res, next) => {
   res.send('Reset Password Route');
+};
+
+const sendToken = (user, statusCode, res) => {
+  const token = user.getSignedJwtToken();
+  res.status(statusCode).json({ sucess: true, token });
 };
