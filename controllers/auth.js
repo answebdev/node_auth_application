@@ -92,6 +92,7 @@ exports.login = async (req, res, next) => {
     }
 
     // Provide token for user to log in
+
     // res.status(200).json({
     //   success: true,
     //   token: '4391y4kh23',
