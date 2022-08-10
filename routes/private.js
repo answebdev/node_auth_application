@@ -9,3 +9,5 @@ const { protect } = require('../middleware/auth');
 router.route('/').get(protect, getPrivateData);
 
 module.exports = router;
+
+// STOPPED AT 1:22:50

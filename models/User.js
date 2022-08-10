@@ -1,4 +1,5 @@
 // Mongoose helps us create schemas, validate schemas, etc.
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -69,6 +70,25 @@ UserSchema.methods.getSignedJwtToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE,
   });
+};
+
+// Generate token for Forgot Password Route (to be used in 'controllers/auth.js')
+UserSchema.methods.getResetPasswordToken = function () {
+  
+  // Generate a reset token using to 'crypto' package
+  const resetToken = crypto.randomBytes(20).toString('hex');
+
+  // Hash token (private key) and save to database
+  this.resetPasswordToken = crypto
+    // All this comes from the 'crypto' docs:
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  // Set token expiration date (10 minutes)
+  this.resetPasswordExpire = Date.now() + 10 * (60 * 1000);
+
+  return resetToken;
 };
 
 const User = mongoose.model('User', UserSchema);

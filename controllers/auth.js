@@ -103,8 +103,52 @@ exports.login = async (req, res, next) => {
   }
 };
 
-exports.forgotpassword = (req, res, next) => {
-  res.send('Forgot Password Route');
+exports.forgotpassword = async (req, res, next) => {
+  // res.send('Forgot Password Route');
+  const { email } = req.body;
+
+  try {
+    // Check if user actually exists in database
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return next(new ErrorResponse('Email could not be sent', 404));
+    }
+
+    // Generate token
+    const resetToken = user.getResetPasswordToken();
+
+    // Save user - this will save the newly created field (the reset token password field) to the database
+    await user.save();
+
+    // Create reset URL to email to provided email.
+    // Create the reset URL
+    // Here, we point to our frontend (whatever domain our frontend is running on) -
+    // this can actually be put in the environment variables ('config.env'), and we can get it from there:
+    const resetUrl = `http://localhost:3000/passwordreset/${resetToken}`;
+
+    // HTML message we want to send to client.
+    // You can also create nice templates with Pug (https://pugjs.org) and put that in here where the HTML code goes.
+    // An IMPORTANT property to add below to the 'href' is 'clicktracking' and set it to 'off'.
+    // The reason for this is when we use our email service (e.g., SendGrid), and they add a strange looking link,
+    // it takes you to the same route, but they re-route it through them, and we don't want that,
+    // so we set 'clicktracking' to 'off'.
+    const message = `
+    <h1>You have requested a password reset</h1>
+    <p>Please go to this link to reset your password:</p>
+    <a href=${resetUrl} clicktracking=off>${resetUrl}</a>
+  `;
+
+    // Send our email.
+    // Here, we're going to use Nodemailer and SendGrid.
+    try {
+      await sendEmail({
+        to: user.email,
+        subject: 'Password Reset Request',
+        text: message,
+      });
+    } catch (error) {}
+  } catch (error) {}
 };
 
 exports.resetpassword = (req, res, next) => {
