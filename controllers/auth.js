@@ -1,6 +1,7 @@
 // Bring in the User model
 const User = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
+const sendEmail = require('../utils/sendEmail');
 
 // Authentication Routes.
 // End route functions for all of our routes.
@@ -147,8 +148,19 @@ exports.forgotpassword = async (req, res, next) => {
         subject: 'Password Reset Request',
         text: message,
       });
-    } catch (error) {}
-  } catch (error) {}
+
+      res.status(200).json({ success: true, data: 'Email Sent' });
+    } catch (error) {
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpire = undefined;
+
+      await user.save();
+
+      return next(new ErrorResponse('Email could not be sent', 500));
+    }
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.resetpassword = (req, res, next) => {
