@@ -1,4 +1,5 @@
 // Bring in the User model
+const crypto = require('crypto');
 const User = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
 const sendEmail = require('../utils/sendEmail');
@@ -163,8 +164,47 @@ exports.forgotpassword = async (req, res, next) => {
   }
 };
 
-exports.resetpassword = (req, res, next) => {
-  res.send('Reset Password Route');
+// This is an 'async' function since we are working with the database
+exports.resetpassword = async (req, res, next) => {
+  // res.send('Reset Password Route');
+
+  // Recreate the reset token
+  const resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(req.params.resetToken)
+    .digest('hex');
+
+  // Search for user that has this same token
+  try {
+    const user = await User.findOne({
+      resetPasswordToken: resetPasswordToken,
+
+      // The MongoDB query 'gt' means 'greater than' -
+      // we want to see if the expiration date of the token of the user is still greater than the current time;
+      // we want to know that the token is still valid:
+      resetPasswordExpire: { $gt: Date.now() },
+    });
+
+    // If there is no user
+    if (!user) {
+      return next(new ErrorResponse('Invalid Reset Token', 400));
+    }
+
+    // Take the user and set the password equal to the 'req.body.password'
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save();
+
+    res.status(201).json({
+      success: true,
+      data: 'Password Reset Successfully',
+      token: user.getSignedJwtToken(),
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 const sendToken = (user, statusCode, res) => {
