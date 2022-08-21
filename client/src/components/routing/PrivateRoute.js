@@ -1,4 +1,6 @@
-import { Redirect, Route } from 'react-router-dom';
+import { Navigate, Route } from 'react-router-dom';
+
+// See: https://bobbyhadz.com/blog/react-export-redirect-was-not-found-in-react-router-dom
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   return (
@@ -11,7 +13,8 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
         localStorage.getItem('authToken') ? (
           <Component {...props} />
         ) : (
-          <Redirect to='/login' />
+          // <Redirect to='/login' />
+          <Navigate to='/login' />
         )
       }
     />
