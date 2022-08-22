@@ -16,7 +16,7 @@ const PrivateScreen = ({ history }) => {
     // ...if user IS logged in, then fetch private data (use 'async' because this is an Axios request)
     const fetchPrivateData = async () => {
       const config = {
-        headers: {
+        header: {
           'Content-Type': 'application/json',
           // Authorization token:
           Authorization: `Bearer ${localStorage.getItem('authToken')}`,
