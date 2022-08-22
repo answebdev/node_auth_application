@@ -1,9 +1,99 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
+import './LoginScreen.css';
 
-const LoginScreen = () => {
+const LoginScreen = ({ history }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  // Check that the user cannot get to this route if already logged in.
+  // Once the user is logged in, we don't want them to go the login or register page.
+  useEffect(() => {
+    if (localStorage.getItem('authToken')) {
+      history.push('/');
+    }
+  }, [history]);
+
+  // Since we're going to be doing an Axios request here, this needs to be an 'async' function -
+  // then use the 'await' down below in the Axios Post requests (in the try/catch)
+  const loginHandler = async (e) => {
+    e.preventDefault();
+
+    const config = {
+      header: {
+        'Content-Type': 'application/json',
+      },
+    };
+
+    try {
+      // Note: 'username', 'email', 'password' are the same values as what is used in our API
+      const { data } = await axios.post(
+        '/api/auth/login',
+        { email, password },
+        config
+      );
+
+      // Once we sync this, we will get our token
+      localStorage.setItem('authToken', data.token);
+
+      // Redirect
+      history.pushState('/');
+    } catch (error) {
+      setError(error.response.data.error);
+      setTimeout(() => {
+        setError('');
+      }, 5000);
+    }
+  };
+
   return (
-    <div>LoginScreen</div>
-  )
-}
+    <div className='login-screen'>
+      <form onSubmit={loginHandler} className='login-screen__form'>
+        <h3 className='login-screen__title'>Login</h3>
+        {/* If there is an error, create a span and log that error: */}
+        {error && <span className='error-message'>{error}</span>}
+        <div className='form-group'>
+          <label htmlFor='email'>Email:</label>
+          <input
+            type='email'
+            required
+            id='email'
+            placeholder='Email address'
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            tabIndex={1}
+          />
+        </div>
+        <div className='form-group'>
+          <label htmlFor='password'>
+            Password:{' '}
+            <Link to='/forgotpassword' className='login-screen__forgotpassword'>
+              Forgot Password?
+            </Link>
+          </label>
+          <input
+            type='password'
+            required
+            id='password'
+            autoComplete='true'
+            placeholder='Enter password'
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+            tabIndex={2}
+          />
+        </div>
+        <button type='submit' className='btn btn-primary'>
+          Login
+        </button>
 
-export default LoginScreen
+        <span className='login-screen__subtext'>
+          Don't have an account? <Link to='/register'>Register</Link>
+        </span>
+      </form>
+    </div>
+  );
+};
+
+export default LoginScreen;

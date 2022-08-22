@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import './RegisterScreen.css';
@@ -9,6 +9,14 @@ const RegisterScreen = ({ history }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+
+  // Check that the user cannot get to this route if already logged in.
+  // Once the user is logged in, we don't want them to go the login or register page.
+  useEffect(() => {
+    if (localStorage.getItem('authToken')) {
+      history.push('/');
+    }
+  }, [history]);
 
   // Since we're going to be doing an Axios request here, this needs to be an 'async' function -
   // then use the 'await' down below in the Axios Post requests (in the try/catch)
