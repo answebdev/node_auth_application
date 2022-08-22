@@ -22,7 +22,7 @@ const LoginScreen = ({ history }) => {
     e.preventDefault();
 
     const config = {
-      header: {
+      headers: {
         'Content-Type': 'application/json',
       },
     };
