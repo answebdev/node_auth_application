@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './LoginScreen.css';
 
 const LoginScreen = ({ history }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+
+  const navigate = useNavigate();
 
   // Check that the user cannot get to this route if already logged in.
   // Once the user is logged in, we don't want them to go the login or register page.
@@ -28,7 +30,7 @@ const LoginScreen = ({ history }) => {
     };
 
     try {
-      // Note: 'username', 'email', 'password' are the same values as what is used in our API
+      // Note: 'email' and 'password' are the same values as what is used in our API
       const { data } = await axios.post(
         '/api/auth/login',
         { email, password },
@@ -39,9 +41,11 @@ const LoginScreen = ({ history }) => {
       localStorage.setItem('authToken', data.token);
 
       // Redirect
-      history.pushState('/');
+      // history.push('/');
+
+      navigate('/');
     } catch (error) {
-      setError(error.response.data.error);
+      setError(error.response.data.error); // This line is giving error in console when logging in
       setTimeout(() => {
         setError('');
       }, 5000);
@@ -69,7 +73,11 @@ const LoginScreen = ({ history }) => {
         <div className='form-group'>
           <label htmlFor='password'>
             Password:{' '}
-            <Link to='/forgotpassword' className='login-screen__forgotpassword'>
+            <Link
+              to='/forgotpassword'
+              className='login-screen__forgotpassword'
+              tabIndex={4}
+            >
               Forgot Password?
             </Link>
           </label>
@@ -84,7 +92,7 @@ const LoginScreen = ({ history }) => {
             tabIndex={2}
           />
         </div>
-        <button type='submit' className='btn btn-primary'>
+        <button type='submit' className='btn btn-primary' tabIndex={3}>
           Login
         </button>
 

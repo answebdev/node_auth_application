@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './RegisterScreen.css';
 
 const RegisterScreen = ({ history }) => {
@@ -9,6 +9,8 @@ const RegisterScreen = ({ history }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+
+  const navigate = useNavigate();
 
   // Check that the user cannot get to this route if already logged in.
   // Once the user is logged in, we don't want them to go the login or register page.
@@ -54,7 +56,8 @@ const RegisterScreen = ({ history }) => {
       localStorage.setItem('authToken', data.token);
 
       // Redirect
-      history.pushState('/');
+      // history.pushState('/');
+      navigate('/');
     } catch (error) {
       setError(error.response.data.error);
       setTimeout(() => {
@@ -107,7 +110,7 @@ const RegisterScreen = ({ history }) => {
           <label htmlFor='confirmpassword'>Confirm Password:</label>
           <input
             id='confirmpassword'
-            type='confirmpassword'
+            type='password'
             placeholder='Confirm Password'
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}

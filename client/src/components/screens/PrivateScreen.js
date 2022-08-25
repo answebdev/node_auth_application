@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
+
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const PrivateScreen = ({ history }) => {
   const [error, setError] = useState('');
   const [privateData, setPrivateData] = useState('');
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     // If there is nothing in the local storage (i.e., if there is no 'authToken' in local sotrage),
@@ -29,7 +33,7 @@ const PrivateScreen = ({ history }) => {
       } catch (error) {
         // If there is an error when requesting, remove the item
         localStorage.removeItem('authToken');
-        setError('You are not authorized please login');
+        setError('You are not authorized. Please log in.');
       }
     };
 
@@ -43,7 +47,8 @@ const PrivateScreen = ({ history }) => {
     localStorage.removeItem('authToken');
 
     // Redirect to login
-    history.push('/login');
+    //history.push('/login');
+    navigate('/login');
   };
 
   // Once the page is loaded, do a check:
